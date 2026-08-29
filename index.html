@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f8f6f4">
+  <title>Wispace | Make room for your goals</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <section id="welcome-view" class="welcome-view screen active">
+      <div class="brand-mark">W</div>
+      <div class="welcome-copy">
+        <p class="eyebrow">A softer way to save</p>
+        <h1>Make room<br>for what matters.</h1>
+        <p>Build a saving rhythm that fits real life, one small step at a time.</p>
+      </div>
+      <div class="welcome-orbit" aria-hidden="true"><span>$</span><i></i><b></b></div>
+      <button class="primary-button welcome-button" data-action="start">Get started <span>-></span></button>
+    </section>
+
+    <section id="signin-view" class="form-view screen">
+      <button class="back-button" data-action="welcome">&#8592;</button>
+      <div class="form-heading"><p class="eyebrow">Welcome to Wispace</p><h2>Let's make your<br>money feel lighter.</h2><p>Tell us a little about you to personalize your space.</p></div>
+      <form id="profile-form" class="stack-form">
+        <div class="form-row"><label>First name<input id="first-name-input" type="text" placeholder="First name" required></label><label>Last name<input id="last-name-input" type="text" placeholder="Last name" required></label></div>
+        <label>What should we call you?<input id="name-input" type="text" placeholder="Your name" required></label>
+        <label>What are you saving in?<select id="currency-input"><option value="$">USD ($)</option><option value="CAD">CAD ($)</option><option value="EUR">EUR (€)</option></select></label>
+        <button class="primary-button" type="submit">Create my space <span>-></span></button>
+      </form>
+    </section>
+
+    <section id="app-view" class="app-view screen">
+      <header class="app-header"><div><p class="eyebrow" id="greeting">Good morning</p><h1>Wispace</h1><p class="subtle">Steady progress, softer landing.</p></div><button class="add-button" data-action="deposit">Add <span>+</span></button></header>
+
+      <div id="home-page" class="page active-page">
+        <section class="progress-section">
+          <div class="progress-ring" id="progress-ring"><div class="ring-inner"><span>Saved</span><strong id="saved-value">$75.00</strong><small>of <span id="goal-value">$200.00</span> goal</small></div></div>
+          <p class="pace-note"><span class="status-dot"></span><span id="pace-copy">You are right on pace</span></p>
+        </section>
+        <button class="primary-button deposit-button" data-action="deposit">Deposit <span id="deposit-label">$20</span> <span>+</span></button>
+        <section class="checkin-card"><div class="section-heading"><div><p class="eyebrow">Your rhythm</p><h2>Daily check-in</h2></div><button class="icon-button" data-action="shift-checkins" aria-label="View next check-ins">&#8594;</button></div><div class="checkin-track" id="checkin-track" tabindex="0" aria-label="Daily check-ins"></div><p class="swipe-hint">Drag to explore your days</p></section>
+        <section class="mini-stat-row"><div><span>This month</span><strong id="month-saved">$75.00</strong></div><div><span>Next deposit</span><strong id="next-deposit">$20.00</strong></div></section>
+      </div>
+
+      <div id="goals-page" class="page">
+        <div class="page-title"><p class="eyebrow">Plan with intention</p><h2>Your goals</h2></div>
+        <section class="goal-builder panel"><div class="section-heading"><div><p class="eyebrow">New goal</p><h2>Set a target</h2></div><span class="target-symbol">$</span></div><label>Target amount<input id="target-input" type="number" min="1" value="200"></label><label>Timeframe<select id="timeframe-input"><option value="30">30 days</option><option value="90">3 months</option><option value="180" selected>6 months</option><option value="365">1 year</option></select></label><div class="suggestion"><span>Suggested cadence</span><strong id="cadence-value">$1.11 / day</strong></div><div class="cadence-chips" id="cadence-chips"></div><button class="secondary-button" id="save-goal" type="button">Update goal</button></section>
+        <div class="goal-list" id="goal-list"></div>
+      </div>
+
+      <div id="history-page" class="page">
+        <div class="page-title"><p class="eyebrow">Your money trail</p><h2>History</h2></div>
+        <div class="history-tabs"><button class="active">Overview</button><button>Deposits</button></div>
+        <section class="flow-summary panel"><div><span>Monthly flow</span><strong>$4,200</strong></div><div class="flow-pills"><p><span>Spent</span><b>$2,940</b></p><p><span>Saved</span><b id="history-saved">$1,260</b></p></div></section>
+        <section class="transactions" id="transactions"></section>
+      </div>
+
+      <div id="profile-page" class="page">
+        <div class="page-title"><p class="eyebrow">Your space</p><h2>Profile</h2></div>
+        <section class="profile-card panel"><div class="profile-summary"><div class="avatar" id="avatar">A</div><div><h2 id="profile-name">Alicia James</h2><p id="profile-handle">@alicia</p></div></div><div class="settings-list"><label>Turn on reminders <input class="toggle" type="checkbox" checked></label><label>Face unlock <input class="toggle" type="checkbox" checked></label><label>Private vault <input class="toggle" type="checkbox"></label><label>Currency <strong id="profile-currency">USD ($)</strong></label></div></section><button class="secondary-button" data-action="welcome">Sign out</button>
+      </div>
+
+      <nav class="bottom-nav" aria-label="Main navigation"><button class="active" data-page="home-page"><span class="nav-icon">⌂</span>Home</button><button data-page="goals-page"><span class="nav-icon">◎</span>Goals</button><button data-page="history-page"><span class="nav-icon">▤</span>History</button><button data-page="profile-page"><span class="nav-icon">○</span>Profile</button></nav>
+    </section>
+
+    <div class="modal-backdrop" id="deposit-modal"><section class="deposit-modal" role="dialog" aria-modal="true"><button class="close-button" data-action="close-modal">&#10005;</button><p class="eyebrow">Add to your goal</p><h2>Every little bit counts.</h2><label>Deposit amount<div class="money-input"><span id="currency-symbol">$</span><input id="deposit-input" type="number" min="0.01" step="0.01" value="20"></div></label><div class="deposit-suggestions"><button data-amount="10">$10</button><button data-amount="20">$20</button><button data-amount="50">$50</button></div><button class="primary-button" id="confirm-deposit">Make deposit <span>-></span></button></section></div>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
