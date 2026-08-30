@@ -11,65 +11,296 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <main class="app-shell">
-    <section id="welcome-view" class="welcome-view screen active">
-      <div class="brand-mark">W</div>
-      <div class="welcome-copy">
-        <p class="eyebrow">A softer way to save</p>
-        <h1>Make room<br>for what matters.</h1>
-        <p>Build a saving rhythm that fits real life, one small step at a time.</p>
+<main class="app-shell">
+
+  <!-- Intro -->
+  <section id="welcome-view" class="welcome-view screen active">
+    <div class="brand-mark">W</div>
+    <div class="welcome-copy">
+      <p class="eyebrow">A softer way to save</p>
+      <h1>Make room<br>for what matters.</h1>
+      <p>Build a saving rhythm that fits real life, one small step at a time.</p>
+    </div>
+    <div class="welcome-orbit" aria-hidden="true"><span>$</span><i></i><b></b></div>
+    <button class="primary-button welcome-button" data-action="start">Get started <span>&rarr;</span></button>
+    <button class="text-button" data-action="signin">I already have a space</button>
+  </section>
+
+  <!-- Sign in / create account -->
+  <section id="signin-view" class="form-view screen">
+    <button class="back-button" data-action="welcome" aria-label="Back">&#8592;</button>
+
+    <div class="form-heading">
+      <p class="eyebrow">Welcome to Wispace</p>
+      <h2 id="auth-title">Let's make your<br>money feel lighter.</h2>
+      <p id="auth-subtitle">Tell us a little about you to personalise your space.</p>
+    </div>
+
+    <div class="segmented" id="auth-tabs">
+      <button type="button" class="active" data-mode="create">Create account</button>
+      <button type="button" data-mode="signin">Sign in</button>
+    </div>
+
+    <form id="profile-form" class="stack-form">
+      <div class="form-row when-create">
+        <label>First name<input id="first-name-input" type="text" placeholder="First name" autocomplete="given-name"></label>
+        <label>Last name<input id="last-name-input" type="text" placeholder="Last name" autocomplete="family-name"></label>
       </div>
-      <div class="welcome-orbit" aria-hidden="true"><span>$</span><i></i><b></b></div>
-      <button class="primary-button welcome-button" data-action="start">Get started <span>-></span></button>
-    </section>
+      <label class="when-create">What should we call you?
+        <input id="name-input" type="text" placeholder="Your name" autocomplete="nickname">
+      </label>
+      <label>Email
+        <input id="email-input" type="email" placeholder="you@email.com" autocomplete="email" required>
+      </label>
+      <label>Password
+        <input id="password-input" type="password" placeholder="At least 6 characters" minlength="6" required>
+      </label>
+      <label class="when-create">What are you saving in?
+        <select id="currency-input">
+          <option value="USD">USD (US$)</option>
+          <option value="CAD">CAD (CA$)</option>
+          <option value="EUR">EUR (&euro;)</option>
+        </select>
+      </label>
+      <p class="form-note">Student project &mdash; everything stays in this browser and is never sent anywhere.</p>
+      <p class="form-error" id="auth-error" hidden></p>
+      <button class="primary-button" type="submit" id="auth-submit">Create my space <span>&rarr;</span></button>
+    </form>
+  </section>
 
-    <section id="signin-view" class="form-view screen">
-      <button class="back-button" data-action="welcome">&#8592;</button>
-      <div class="form-heading"><p class="eyebrow">Welcome to Wispace</p><h2>Let's make your<br>money feel lighter.</h2><p>Tell us a little about you to personalize your space.</p></div>
-      <form id="profile-form" class="stack-form">
-        <div class="form-row"><label>First name<input id="first-name-input" type="text" placeholder="First name" required></label><label>Last name<input id="last-name-input" type="text" placeholder="Last name" required></label></div>
-        <label>What should we call you?<input id="name-input" type="text" placeholder="Your name" required></label>
-        <label>What are you saving in?<select id="currency-input"><option value="$">USD ($)</option><option value="CAD">CAD ($)</option><option value="EUR">EUR (€)</option></select></label>
-        <button class="primary-button" type="submit">Create my space <span>-></span></button>
-      </form>
-    </section>
+  <!-- The app itself -->
+  <section id="app-view" class="app-view screen">
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Wispace</p>
+        <h1 id="greeting">Hey there!</h1>
+        <p class="subtle">Steady progress, softer landing.</p>
+      </div>
+      <button class="add-button" type="button" data-action="new-goal">Add <span>+</span></button>
+    </header>
 
-    <section id="app-view" class="app-view screen">
-      <header class="app-header"><div><p class="eyebrow" id="greeting">Wispace</p><h1>Hey, Stella!</h1><p class="subtle">Steady progress, softer landing.</p></div><button class="add-button" type="button">Add <span>+</span></button></header>
+    <!-- Home -->
+    <div id="home-page" class="page active-page">
+      <div class="empty-state" id="home-empty" hidden>
+        <div class="empty-orbit" aria-hidden="true">$</div>
+        <h3>Nothing saved yet</h3>
+        <p>Pick something you want and Wispace will work out the pace for you.</p>
+        <button class="primary-button" data-action="new-goal">Make your first goal <span>+</span></button>
+      </div>
 
-      <div id="home-page" class="page active-page">
-        <section class="progress-section">
-          <div class="progress-ring" id="progress-ring"><div class="ring-inner"><span>Saved</span><strong id="saved-value">$75.00</strong><small>of <span id="goal-value">$200.00</span> goal</small></div></div>
-          <p class="pace-note"><span class="status-dot"></span><span id="pace-copy">You are right on pace</span></p>
+      <div id="home-content">
+        <div class="goal-carousel" id="goal-carousel" tabindex="0" aria-label="Your goals, drag to switch"></div>
+        <div class="carousel-dots" id="carousel-dots"></div>
+
+        <button class="primary-button deposit-button" data-action="deposit">Deposit <b id="deposit-label">&mdash;</b></button>
+
+        <section class="checkin-card">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Your rhythm</p>
+              <h2 id="checkin-title">Daily check-in</h2>
+            </div>
+            <button class="icon-button" data-action="checkin-next" aria-label="Move the check-ins forward">&#8594;</button>
+          </div>
+          <div class="checkin-track" id="checkin-track" tabindex="0" aria-label="Check-in timeline"></div>
+          <p class="swipe-hint">Drag left or right to move through your plan</p>
         </section>
-        <button class="primary-button deposit-button" data-action="deposit">Deposit <span id="deposit-label">$20</span> <span>+</span></button>
-        <section class="checkin-card"><div class="section-heading"><div><p class="eyebrow">Your rhythm</p><h2>Daily check-in</h2></div><button class="icon-button" data-action="shift-checkins" aria-label="View next check-ins">&#8594;</button></div><div class="checkin-track" id="checkin-track" tabindex="0" aria-label="Daily check-ins"></div><p class="swipe-hint">Drag to explore your days</p></section>
-        <section class="mini-stat-row"><div><span>This month</span><strong id="month-saved">$75.00</strong></div><div><span>Next deposit</span><strong id="next-deposit">$20.00</strong></div></section>
+
+        <section class="mini-stat-row">
+          <div><span>Saved this month</span><strong id="month-saved">&mdash;</strong></div>
+          <div><span>Next contribution</span><strong id="next-deposit">&mdash;</strong></div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Goals -->
+    <div id="goals-page" class="page">
+      <div class="page-title goals-title">
+        <div>
+          <p class="eyebrow">Plan with intention</p>
+          <h2>Your goals</h2>
+        </div>
+        <button class="add-button" type="button" data-action="new-goal">New goal <span>+</span></button>
+      </div>
+      <div class="goal-list" id="goal-list"></div>
+    </div>
+
+    <!-- History -->
+    <div id="history-page" class="page">
+      <div class="page-title goals-title">
+        <div>
+          <p class="eyebrow">Your money trail</p>
+          <h2>History</h2>
+        </div>
+        <button class="add-button" type="button" data-action="new-entry">Log <span>+</span></button>
       </div>
 
-      <div id="goals-page" class="page">
-        <div class="page-title"><p class="eyebrow">Plan with intention</p><h2>Your goals</h2></div>
-        <section class="goal-builder panel"><div class="section-heading"><div><p class="eyebrow">New goal</p><h2>Set a target</h2></div><span class="target-symbol">$</span></div><label>Target amount<input id="target-input" type="number" min="1" value="200"></label><label>Timeframe<select id="timeframe-input"><option value="30">30 days</option><option value="90">3 months</option><option value="180" selected>6 months</option><option value="365">1 year</option></select></label><div class="suggestion"><span>Suggested cadence</span><strong id="cadence-value">$1.11 / day</strong></div><div class="cadence-chips" id="cadence-chips"></div><button class="secondary-button" id="save-goal" type="button">Update goal</button></section>
-        <div class="goal-list" id="goal-list"></div>
+      <div class="history-tabs" id="history-tabs">
+        <button class="active" data-filter="all">All</button>
+        <button data-filter="goals">Goals</button>
+        <button data-filter="outside">Outside</button>
       </div>
 
-      <div id="history-page" class="page">
-        <div class="page-title"><p class="eyebrow">Your money trail</p><h2>History</h2></div>
-        <div class="history-tabs"><button class="active">Overview</button><button>Deposits</button></div>
-        <section class="flow-summary panel"><div><span>Monthly flow</span><strong>$4,200</strong></div><div class="flow-pills"><p><span>Spent</span><b>$2,940</b></p><p><span>Saved</span><b id="history-saved">$1,260</b></p></div></section>
-        <section class="transactions" id="transactions"></section>
+      <section class="flow-summary panel">
+        <div><span>Saved across all goals</span><strong id="history-total">&mdash;</strong></div>
+        <div class="flow-pills">
+          <p><span>In this month</span><b id="history-in">&mdash;</b></p>
+          <p><span>Out this month</span><b id="history-out">&mdash;</b></p>
+        </div>
+      </section>
+
+      <section class="transactions" id="transactions"></section>
+    </div>
+
+    <!-- Profile -->
+    <div id="profile-page" class="page">
+      <div class="page-title">
+        <p class="eyebrow">Your space</p>
+        <h2>Profile</h2>
       </div>
 
-      <div id="profile-page" class="page">
-        <div class="page-title"><p class="eyebrow">Your space</p><h2>Profile</h2></div>
-        <section class="profile-card panel"><div class="profile-summary"><div class="avatar" id="avatar">A</div><div><h2 id="profile-name">Alicia James</h2><p id="profile-handle">@alicia</p></div></div><div class="settings-list"><label>Turn on reminders <input class="toggle" type="checkbox" checked></label><label>Face unlock <input class="toggle" type="checkbox" checked></label><label>Private vault <input class="toggle" type="checkbox"></label><label>Currency <strong id="profile-currency">USD ($)</strong></label></div></section><button class="secondary-button" data-action="welcome">Sign out</button>
+      <section class="profile-card panel">
+        <div class="profile-summary">
+          <div class="avatar" id="avatar">W</div>
+          <div>
+            <h2 id="profile-name">&mdash;</h2>
+            <p id="profile-handle">&mdash;</p>
+            <p class="subtle" id="profile-email">&mdash;</p>
+          </div>
+        </div>
+
+        <div class="profile-stats">
+          <div><span>Goals</span><strong id="stat-goals">0</strong></div>
+          <div><span>Saved</span><strong id="stat-saved">&mdash;</strong></div>
+          <div><span>Check-ins</span><strong id="stat-checkins">0</strong></div>
+        </div>
+
+        <div class="settings-list">
+          <label>Display name<input id="setting-name" type="text" placeholder="Your name"></label>
+          <label>Currency
+            <select id="profile-currency">
+              <option value="USD">USD (US$)</option>
+              <option value="CAD">CAD (CA$)</option>
+              <option value="EUR">EUR (&euro;)</option>
+            </select>
+          </label>
+          <label>Remind me to check in<input class="toggle" type="checkbox" id="setting-reminders"></label>
+          <label>Member since<strong id="profile-since">&mdash;</strong></label>
+        </div>
+      </section>
+
+      <button class="secondary-button" data-action="signout">Sign out</button>
+    </div>
+
+    <nav class="bottom-nav" aria-label="Main navigation">
+      <button class="active" data-page="home-page"><span class="nav-icon">&#8962;</span>Home</button>
+      <button data-page="goals-page"><span class="nav-icon">&#9678;</span>Goals</button>
+      <button data-page="history-page"><span class="nav-icon">&#9636;</span>History</button>
+      <button data-page="profile-page"><span class="nav-icon">&#9675;</span>Profile</button>
+    </nav>
+  </section>
+
+  <!-- Deposit / withdraw sheet -->
+  <div class="modal-backdrop" id="deposit-modal">
+    <section class="sheet" role="dialog" aria-modal="true" aria-label="Move money">
+      <button class="close-button" data-action="close-modal" aria-label="Close">&#10005;</button>
+      <p class="eyebrow" id="deposit-eyebrow">Add to your goal</p>
+      <h2 id="deposit-heading">Every little bit counts.</h2>
+
+      <div class="segmented" id="deposit-mode">
+        <button type="button" class="active" data-mode="deposit">Deposit</button>
+        <button type="button" data-mode="withdraw">Take out</button>
       </div>
 
-      <nav class="bottom-nav" aria-label="Main navigation"><button class="active" data-page="home-page"><span class="nav-icon">⌂</span>Home</button><button data-page="goals-page"><span class="nav-icon">◎</span>Goals</button><button data-page="history-page"><span class="nav-icon">▤</span>History</button><button data-page="profile-page"><span class="nav-icon">○</span>Profile</button></nav>
+      <label>Goal<select id="deposit-goal"></select></label>
+      <label>Amount
+        <div class="money-input"><span class="currency-symbol">$</span><input id="deposit-input" type="number" min="0.01" step="0.01" value="20"></div>
+      </label>
+
+      <div class="deposit-suggestions" id="deposit-suggestions"></div>
+      <p class="plan-hint" id="deposit-hint"></p>
+      <p class="form-error" id="deposit-error" hidden></p>
+      <button class="primary-button" id="confirm-deposit">Make deposit <span>&rarr;</span></button>
     </section>
+  </div>
 
-    <div class="modal-backdrop" id="deposit-modal"><section class="deposit-modal" role="dialog" aria-modal="true"><button class="close-button" data-action="close-modal">&#10005;</button><p class="eyebrow">Add to your goal</p><h2>Every little bit counts.</h2><label>Deposit amount<div class="money-input"><span id="currency-symbol">$</span><input id="deposit-input" type="number" min="0.01" step="0.01" value="20"></div></label><div class="deposit-suggestions"><button data-amount="10">$10</button><button data-amount="20">$20</button><button data-amount="50">$50</button></div><button class="primary-button" id="confirm-deposit">Make deposit <span>-></span></button></section></div>
-  </main>
-  <script src="app.js"></script>
+  <!-- Goal builder sheet -->
+  <div class="modal-backdrop" id="goal-modal">
+    <section class="sheet tall" role="dialog" aria-modal="true" aria-label="Goal settings">
+      <button class="close-button" data-action="close-modal" aria-label="Close">&#10005;</button>
+      <p class="eyebrow" id="goal-eyebrow">New goal</p>
+      <h2 id="goal-heading">Set a target.</h2>
+
+      <div class="sheet-body">
+        <label>What are you saving for?
+          <input id="goal-name-input" type="text" placeholder="Kyoto trip, rainy day fund...">
+        </label>
+
+        <label>Target amount
+          <div class="money-input"><span class="currency-symbol">$</span><input id="goal-target-input" type="number" min="1" step="1" value="200"></div>
+        </label>
+
+        <label>Reach it by
+          <select id="goal-timeframe-input">
+            <option value="30">In 30 days</option>
+            <option value="90">In 3 months</option>
+            <option value="180" selected>In 6 months</option>
+            <option value="365">In 1 year</option>
+            <option value="custom">Pick my own date</option>
+          </select>
+        </label>
+
+        <label id="goal-date-wrap" hidden>Deadline
+          <input id="goal-date-input" type="date">
+        </label>
+
+        <div class="cadence-block">
+          <p class="field-label">How often do you want to put money in?</p>
+          <div class="cadence-chips" id="cadence-chips"></div>
+        </div>
+
+        <label>Amount each time
+          <div class="money-input"><span class="currency-symbol">$</span><input id="goal-contribution-input" type="number" min="0" step="0.01"></div>
+        </label>
+
+        <div class="suggestion" id="plan-summary">
+          <span>Your plan</span>
+          <strong id="plan-summary-value">&mdash;</strong>
+        </div>
+
+        <div class="suggestion-list" id="plan-suggestions"></div>
+      </div>
+
+      <div class="sheet-actions">
+        <button class="secondary-button danger" id="delete-goal" type="button" hidden>Delete goal</button>
+        <button class="primary-button" id="save-goal" type="button">Save goal <span>&rarr;</span></button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Manual history entry sheet -->
+  <div class="modal-backdrop" id="entry-modal">
+    <section class="sheet" role="dialog" aria-modal="true" aria-label="Log an entry">
+      <button class="close-button" data-action="close-modal" aria-label="Close">&#10005;</button>
+      <p class="eyebrow">Outside your goals</p>
+      <h2>Log something else.</h2>
+
+      <div class="segmented" id="entry-mode">
+        <button type="button" class="active" data-mode="income">Money in</button>
+        <button type="button" data-mode="expense">Money out</button>
+      </div>
+
+      <label>What was it?<input id="entry-label" type="text" placeholder="Payday, groceries..."></label>
+      <label>Amount
+        <div class="money-input"><span class="currency-symbol">$</span><input id="entry-amount" type="number" min="0.01" step="0.01" value="20"></div>
+      </label>
+      <label>When<input id="entry-date" type="date"></label>
+      <p class="form-error" id="entry-error" hidden></p>
+      <button class="primary-button" id="confirm-entry">Save entry <span>&rarr;</span></button>
+    </section>
+  </div>
+
+</main>
+<script src="app.js"></script>
 </body>
 </html>
