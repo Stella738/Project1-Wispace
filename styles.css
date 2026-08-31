@@ -7,7 +7,7 @@
   --coral:#ff756f;
   --coral-dark:#f35c62;
   --blush:#ffe4df;
-  --green:#45b979;--violet:#6360c9;
+  --green:#45b979;--violet:#794fdc;--violet-soft:#f2ecfd;
   --amber:#e08c3b;
   --shadow:0 18px 35px rgba(38,25,20,.07);
 }
@@ -75,7 +75,7 @@ h1,h2,h3,p{margin-top:0}
 .progress-badge{flex:0 0 auto;display:grid;justify-items:center;gap:1px;background:var(--blush);color:var(--coral-dark);border-radius:20px;padding:8px 15px;transition:background .3s,color .3s}
 .progress-badge strong{font:700 19px/1.15 'Jaldi',sans-serif;font-variant-numeric:tabular-nums}
 .progress-badge span{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;opacity:.7}
-.progress-badge.done{background:#ecebfa;color:var(--violet)}
+.progress-badge.done{background:var(--violet-soft);color:var(--violet)}
 .add-button:hover{background:var(--blush);color:var(--coral-dark)}
 .add-button span{font-size:19px;line-height:10px;margin-left:4px}
 .page{display:none;animation:rise .35s ease both}
@@ -93,7 +93,7 @@ h1,h2,h3,p{margin-top:0}
 .goal-slide{flex:0 0 100%;scroll-snap-align:center;text-align:center;user-select:none}
 
 .progress-ring{width:min(280px,72vw);aspect-ratio:1;margin:0 auto 18px;border-radius:50%;position:relative;box-shadow:0 15px 30px rgba(255,117,111,.12);transition:box-shadow .4s ease}
-.progress-ring.done{box-shadow:0 15px 30px rgba(99,96,201,.16)}
+.progress-ring.done{box-shadow:0 15px 30px rgba(121,79,220,.16)}
 .ring-svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
 .ring-track{fill:none;stroke:var(--blush);stroke-width:11}
 .ring-fill{fill:none;stroke:var(--coral);stroke-width:11;stroke-linecap:round;transition:stroke-dashoffset .6s ease,stroke .4s ease}
@@ -112,8 +112,8 @@ h1,h2,h3,p{margin-top:0}
 .carousel-dots i{width:7px;height:7px;border-radius:50%;background:#ddd8d5;cursor:pointer;transition:.2s}
 .carousel-dots i.on{background:var(--coral);width:20px;border-radius:5px}
 .deposit-button{margin:18px 0 26px;text-align:center}
-.deposit-button.done{background:linear-gradient(100deg,#8e8bea,var(--violet));box-shadow:0 12px 22px rgba(99,96,201,.22)}
-.deposit-button.done:hover{box-shadow:0 16px 28px rgba(99,96,201,.3)}
+.deposit-button.done{background:linear-gradient(100deg,#9b7aec,var(--violet));box-shadow:0 12px 22px rgba(121,79,220,.22)}
+.deposit-button.done:hover{box-shadow:0 16px 28px rgba(121,79,220,.3)}
 .deposit-button b{font-family:'Jaldi',sans-serif;margin-left:4px}
 
 /* ---------- check-in strip ---------- */
@@ -164,7 +164,7 @@ h1,h2,h3,p{margin-top:0}
 .goal-name{font:700 17px/1.15 'Jaldi',sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pill{flex:0 0 auto;border-radius:15px;padding:4px 10px;font-size:12px;background:#e5f6eb;color:var(--green)}
 .pill.behind{background:#fdf0e2;color:var(--amber)}
-.pill.done{background:var(--blush);color:var(--coral-dark)}
+.pill.done{background:var(--violet-soft);color:var(--violet)}
 .goal-amount{display:block;font:700 29px/1.15 'Jaldi',sans-serif;margin:13px 0 2px}
 .goal-item small{color:var(--muted)}
 .bar{height:8px;border-radius:8px;background:#eeeceb;margin-top:13px;overflow:hidden}
@@ -190,7 +190,7 @@ h1,h2,h3,p{margin-top:0}
 .transaction-icon.green{background:#54be7b}
 .transaction-icon.red{background:#ff8179}
 .transaction-icon.gold{background:#f9b94f}
-.transaction-icon.purple{background:#7d7be1}
+.transaction-icon.purple{background:var(--violet)}
 .transaction strong{display:block;font-size:15px}
 .transaction small{color:var(--muted)}
 .transaction .amount{font-weight:700}
