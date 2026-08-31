@@ -241,6 +241,11 @@ function showPage(id) {
   $$('.page').forEach((page) => page.classList.toggle('active-page', page.id === id));
   $$('.bottom-nav button').forEach((button) => button.classList.toggle('active', button.dataset.page === id));
 
+  // The greeting and the percentage belong to Home only; every other page
+  // has its own title, so the whole header steps out of the way.
+  $('#app-header').hidden = id !== 'home-page';
+  closeSwipedGoal();
+
   // A hidden page has no width, so both sliders lose their place while the
   // user is off on another tab. Put them back once Home is on screen again.
   if (id === 'home-page' && state.goals.length) {
@@ -296,10 +301,10 @@ function renderHome() {
     const pace = paceFor(goal);
     return `
       <article class="goal-slide" data-goal="${goal.id}">
-        <div class="progress-ring">
+        <div class="progress-ring ${saved >= goal.target ? 'done' : ''}">
           <svg class="ring-svg" viewBox="0 0 120 120" aria-hidden="true">
             <circle class="ring-track" cx="60" cy="60" r="52"></circle>
-            <circle class="ring-fill" cx="60" cy="60" r="52"
+            <circle class="ring-fill ${saved >= goal.target ? 'done' : ''}" cx="60" cy="60" r="52"
               stroke-dasharray="${RING_LENGTH}"
               stroke-dashoffset="${RING_LENGTH * (1 - progressOf(goal) / 100)}"></circle>
           </svg>
@@ -332,7 +337,19 @@ function renderHomeStats() {
   const cadence = cadenceOf(goal);
   const next = nextDueCard(goal);
 
-  $('#deposit-label').textContent = money(next ? next.amount : goal.contribution);
+  const complete = savedFor(goal.id) >= goal.target;
+  const percent = Math.round(progressOf(goal));
+
+  const badge = $('#progress-badge');
+  badge.classList.toggle('done', complete);
+  $('#progress-percent').textContent = `${percent}%`;
+
+  const button = $('#deposit-button');
+  button.classList.toggle('done', complete);
+  button.innerHTML = complete
+    ? 'Completed!'
+    : `Deposit <b class="deposit-label">${money(next ? next.amount : goal.contribution)}</b>`;
+
   $('#next-deposit').textContent = next ? `${money(next.amount)} / ${cadence.per}` : 'All done';
   $('#checkin-title').textContent = `${cadence.title} check-in`;
 
@@ -368,6 +385,93 @@ function renderCheckins() {
   if (target) track.scrollLeft = Math.max(target.offsetLeft - track.clientWidth / 2 + target.clientWidth / 2, 0);
 }
 
+/* ---------- swipe a goal aside to reveal Delete ---------- */
+
+const SWIPE_REVEAL = 96;   // matches .goal-delete width in the stylesheet
+
+function closeSwipedGoal() {
+  $$('#goal-list .goal-row.open').forEach((row) => {
+    row.classList.remove('open');
+    row.querySelector('.goal-delete').textContent = 'Delete';
+  });
+}
+
+function enableSwipeDelete(row) {
+  const card = row.querySelector('.goal-item');
+  let pointerId = null;
+  let startX = 0;
+  let startY = 0;
+  let moved = 0;
+  let sliding = false;
+
+  card.addEventListener('pointerdown', (event) => {
+    pointerId = event.pointerId;
+    startX = event.clientX;
+    startY = event.clientY;
+    moved = 0;
+    sliding = false;
+  });
+
+  card.addEventListener('pointermove', (event) => {
+    if (pointerId === null) return;
+    const offsetX = event.clientX - startX;
+    const offsetY = event.clientY - startY;
+
+    /* Capture the pointer only once this clearly is a sideways drag. Grabbing
+       it on pointerdown would retarget the click and break the Edit button,
+       and would fight the page's own vertical scrolling. */
+    if (!sliding) {
+      if (Math.abs(offsetX) < 8 || Math.abs(offsetX) <= Math.abs(offsetY)) return;
+      sliding = true;
+      card.setPointerCapture(pointerId);
+      card.style.transition = 'none';
+    }
+
+    moved = Math.abs(offsetX);
+    const from = row.classList.contains('open') ? -SWIPE_REVEAL : 0;
+    card.style.transform = `translateX(${clamp(from + offsetX, -SWIPE_REVEAL, 0)}px)`;
+  });
+
+  const settle = (event) => {
+    if (pointerId === null) return;
+    if (card.hasPointerCapture(pointerId)) card.releasePointerCapture(pointerId);
+    pointerId = null;
+    if (!sliding) return;
+    sliding = false;
+
+    const offsetX = event.clientX - startX;
+    card.style.transition = '';
+    card.style.transform = '';
+    if (offsetX < -40) {
+      closeSwipedGoal();          // only one row stays open at a time
+      row.classList.add('open');
+    } else if (offsetX > 40) {
+      closeSwipedGoal();
+    }
+  };
+
+  card.addEventListener('pointerup', settle);
+  card.addEventListener('pointercancel', settle);
+
+  // A swipe shouldn't also count as a tap, and neither should the tap that
+  // closes an open row.
+  card.addEventListener('click', (event) => {
+    if (moved > 8) { event.preventDefault(); event.stopPropagation(); return; }
+    if (row.classList.contains('open')) {
+      event.preventDefault();
+      event.stopPropagation();
+      closeSwipedGoal();
+    }
+  }, true);
+}
+
+function deleteGoal(id) {
+  state.goals = state.goals.filter((goal) => goal.id !== id);
+  state.entries = state.entries.filter((entry) => entry.goalId !== id);
+  if (state.activeGoalId === id) state.activeGoalId = state.goals[0] ? state.goals[0].id : null;
+  render();
+}
+
 /* ---------- goals page ---------- */
 
 function renderGoals() {
@@ -388,20 +492,25 @@ function renderGoals() {
     const pace = paceFor(goal);
     const percent = Math.round(progressOf(goal));
     return `
-      <article class="goal-item" data-goal="${goal.id}">
-        <header>
-          <span class="goal-name">${escapeHtml(goal.name)}</span>
-          <span class="pill ${pace.tone}">${percent}%</span>
-        </header>
-        <strong class="goal-amount">${money(saved)}</strong>
-        <small>of ${money(goal.target)} &middot; ${money(goal.contribution)} every ${cadence.per}</small>
-        <div class="bar"><i style="width:${progressOf(goal)}%"></i></div>
-        <p class="goal-foot">
-          <span>Aiming for ${longDate(goal.deadline)}</span>
-          <button class="link-button" type="button" data-edit="${goal.id}">Edit</button>
-        </p>
-      </article>`;
+      <div class="goal-row">
+        <button class="goal-delete" type="button" data-delete="${goal.id}">Delete</button>
+        <article class="goal-item" data-goal="${goal.id}">
+          <header>
+            <span class="goal-name">${escapeHtml(goal.name)}</span>
+            <span class="pill ${pace.tone}">${percent}%</span>
+          </header>
+          <strong class="goal-amount">${money(saved)}</strong>
+          <small>of ${money(goal.target)} &middot; ${money(goal.contribution)} every ${cadence.per}</small>
+          <div class="bar"><i style="width:${progressOf(goal)}%"></i></div>
+          <p class="goal-foot">
+            <span>Aiming for ${longDate(goal.deadline)}</span>
+            <button class="link-button" type="button" data-edit="${goal.id}">Edit</button>
+          </p>
+        </article>
+      </div>`;
   }).join('');
+
+  $$('#goal-list .goal-row').forEach(enableSwipeDelete);
 }
 
 /* ---------- history ---------- */
@@ -922,6 +1031,13 @@ checkinTrack.addEventListener('click', (event) => {
 
 // Goals list
 $('#goal-list').addEventListener('click', (event) => {
+  // Deleting a goal takes its deposits with it, so ask once first.
+  const remove = event.target.closest('[data-delete]');
+  if (remove) {
+    if (remove.dataset.armed === 'yes') deleteGoal(remove.dataset.delete);
+    else { remove.dataset.armed = 'yes'; remove.textContent = 'Sure?'; }
+    return;
+  }
   const edit = event.target.closest('[data-edit]');
   if (edit) { openGoalSheet(edit.dataset.edit); return; }
   const card = event.target.closest('[data-goal]');
@@ -974,12 +1090,10 @@ $('#plan-suggestions').addEventListener('click', (event) => {
 $('#save-goal').addEventListener('click', saveGoalFromSheet);
 $('#delete-goal').addEventListener('click', () => {
   if (!editingGoalId) return;
-  state.goals = state.goals.filter((goal) => goal.id !== editingGoalId);
-  state.entries = state.entries.filter((entry) => entry.goalId !== editingGoalId);
-  if (state.activeGoalId === editingGoalId) state.activeGoalId = state.goals[0] ? state.goals[0].id : null;
+  const id = editingGoalId;
   editingGoalId = null;
   closeModals();
-  render();
+  deleteGoal(id);
 });
 
 // Deposit sheet

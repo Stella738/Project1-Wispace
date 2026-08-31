@@ -72,6 +72,10 @@ h1,h2,h3,p{margin-top:0}
 .app-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:26px;gap:14px}
 .app-header h1{font:700 33px/1.15 'Jaldi',sans-serif;letter-spacing:-1.5px;margin:0 0 3px}
 .add-button{background:#efedeb;border-radius:20px;padding:9px 14px;font-weight:700;font-size:14px;white-space:nowrap;transition:background .2s}
+.progress-badge{flex:0 0 auto;display:grid;justify-items:center;gap:1px;background:var(--blush);color:var(--coral-dark);border-radius:20px;padding:8px 15px;transition:background .3s,color .3s}
+.progress-badge strong{font:700 19px/1.15 'Jaldi',sans-serif;font-variant-numeric:tabular-nums}
+.progress-badge span{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;opacity:.7}
+.progress-badge.done{background:#ecebfa;color:var(--violet)}
 .add-button:hover{background:var(--blush);color:var(--coral-dark)}
 .add-button span{font-size:19px;line-height:10px;margin-left:4px}
 .page{display:none;animation:rise .35s ease both}
@@ -88,10 +92,12 @@ h1,h2,h3,p{margin-top:0}
 .goal-carousel.dragging{cursor:grabbing;scroll-snap-type:none;scroll-behavior:auto}
 .goal-slide{flex:0 0 100%;scroll-snap-align:center;text-align:center;user-select:none}
 
-.progress-ring{width:min(280px,72vw);aspect-ratio:1;margin:0 auto 18px;border-radius:50%;position:relative;box-shadow:0 15px 30px rgba(255,117,111,.12)}
+.progress-ring{width:min(280px,72vw);aspect-ratio:1;margin:0 auto 18px;border-radius:50%;position:relative;box-shadow:0 15px 30px rgba(255,117,111,.12);transition:box-shadow .4s ease}
+.progress-ring.done{box-shadow:0 15px 30px rgba(99,96,201,.16)}
 .ring-svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
 .ring-track{fill:none;stroke:var(--blush);stroke-width:11}
-.ring-fill{fill:none;stroke:var(--coral);stroke-width:11;stroke-linecap:round;transition:stroke-dashoffset .6s ease}
+.ring-fill{fill:none;stroke:var(--coral);stroke-width:11;stroke-linecap:round;transition:stroke-dashoffset .6s ease,stroke .4s ease}
+.ring-fill.done{stroke:var(--violet)}
 .ring-inner{position:absolute;inset:16px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 18px;text-align:center}
 .ring-inner span{color:var(--muted);font-size:13px;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ring-inner small{color:var(--muted);font-size:13px}
@@ -106,6 +112,8 @@ h1,h2,h3,p{margin-top:0}
 .carousel-dots i{width:7px;height:7px;border-radius:50%;background:#ddd8d5;cursor:pointer;transition:.2s}
 .carousel-dots i.on{background:var(--coral);width:20px;border-radius:5px}
 .deposit-button{margin:18px 0 26px;text-align:center}
+.deposit-button.done{background:linear-gradient(100deg,#8e8bea,var(--violet));box-shadow:0 12px 22px rgba(99,96,201,.22)}
+.deposit-button.done:hover{box-shadow:0 16px 28px rgba(99,96,201,.3)}
 .deposit-button b{font-family:'Jaldi',sans-serif;margin-left:4px}
 
 /* ---------- check-in strip ---------- */
@@ -146,8 +154,12 @@ h1,h2,h3,p{margin-top:0}
 /* ---------- goals ---------- */
 
 .goal-list{display:grid;gap:12px}
-.goal-item{padding:18px;border:1px solid var(--line);border-radius:18px;background:#fff;cursor:pointer;transition:box-shadow .2s,transform .2s}
-.goal-item:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.goal-row{position:relative;border-radius:18px;overflow:hidden}
+.goal-delete{position:absolute;top:0;right:0;bottom:0;width:96px;background:var(--coral-dark);color:#fff;font-weight:700;font-size:14px;border-radius:0 18px 18px 0}
+.goal-delete:hover{background:#e0474e}
+.goal-item{position:relative;padding:18px;border:1px solid var(--line);border-radius:18px;background:#fff;cursor:pointer;touch-action:pan-y;user-select:none;transition:transform .25s ease,box-shadow .2s}
+.goal-item:hover{box-shadow:var(--shadow)}
+.goal-row.open .goal-item{transform:translateX(-96px)}
 .goal-item header{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:700}
 .goal-name{font:700 17px/1.15 'Jaldi',sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pill{flex:0 0 auto;border-radius:15px;padding:4px 10px;font-size:12px;background:#e5f6eb;color:var(--green)}

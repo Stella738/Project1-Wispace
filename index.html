@@ -70,13 +70,16 @@
 
   <!-- The app itself -->
   <section id="app-view" class="app-view screen">
-    <header class="app-header">
+    <header class="app-header" id="app-header">
       <div>
         <p class="eyebrow">Wispace</p>
         <h1 id="greeting">Hey there!</h1>
         <p class="subtle">Steady progress, softer landing.</p>
       </div>
-      <button class="add-button" type="button" data-action="new-goal">Add <span>+</span></button>
+      <div class="progress-badge" id="progress-badge">
+        <strong id="progress-percent">0%</strong>
+        <span>saved</span>
+      </div>
     </header>
 
     <!-- Home -->
@@ -92,7 +95,7 @@
         <div class="goal-carousel" id="goal-carousel" tabindex="0" aria-label="Your goals, drag to switch"></div>
         <div class="carousel-dots" id="carousel-dots"></div>
 
-        <button class="primary-button deposit-button" data-action="deposit">Deposit <b id="deposit-label">&mdash;</b></button>
+        <button class="primary-button deposit-button" id="deposit-button" data-action="deposit">Deposit</button>
 
         <section class="checkin-card">
           <div class="section-heading">
