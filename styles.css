@@ -168,7 +168,8 @@ h1,h2,h3,p{margin-top:0}
 .goal-amount{display:block;font:700 29px/1.15 'Jaldi',sans-serif;margin:13px 0 2px}
 .goal-item small{color:var(--muted)}
 .bar{height:8px;border-radius:8px;background:#eeeceb;margin-top:13px;overflow:hidden}
-.bar i{display:block;height:100%;background:var(--green);border-radius:inherit;transition:width .45s ease}
+.bar i{display:block;height:100%;background:var(--green);border-radius:inherit;transition:width .45s ease,background .4s ease}
+.bar.done i{background:var(--violet)}
 .goal-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:13px 0 0;font-size:13px;color:var(--muted)}
 
 /* ---------- history ---------- */

@@ -501,7 +501,7 @@ function renderGoals() {
           </header>
           <strong class="goal-amount">${money(saved)}</strong>
           <small>of ${money(goal.target)} &middot; ${money(goal.contribution)} every ${cadence.per}</small>
-          <div class="bar"><i style="width:${progressOf(goal)}%"></i></div>
+          <div class="bar ${saved >= goal.target ? 'done' : ''}"><i style="width:${progressOf(goal)}%"></i></div>
           <p class="goal-foot">
             <span>Aiming for ${longDate(goal.deadline)}</span>
             <button class="link-button" type="button" data-edit="${goal.id}">Edit</button>
