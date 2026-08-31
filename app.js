@@ -6,8 +6,8 @@ const STORE_KEY = 'wispace-data';
 const DAY_MS = 86400000;
 
 const CURRENCIES = {
-  USD: { symbol: 'US$', label: 'USD (US$)' },
-  CAD: { symbol: 'CA$', label: 'CAD (CA$)' },
+  USD: { symbol: '$', label: 'USD ($)' },
+  CAD: { symbol: '$', label: 'CAD ($)' },
   EUR: { symbol: '€', label: 'EUR (€)' }
 };
 
@@ -112,6 +112,9 @@ function savedFor(goalId) {
 }
 
 const progressOf = (goal) => clamp((savedFor(goal.id) / goal.target) * 100, 0, 100);
+
+// Circumference of the ring's r=52 circle, used to drive the arc length.
+const RING_LENGTH = 2 * Math.PI * 52;
 
 /* What you'd have to put in each time to still land on the original
    deadline. Used to fill the cadence chips and to suggest a fix. */
@@ -293,7 +296,13 @@ function renderHome() {
     const pace = paceFor(goal);
     return `
       <article class="goal-slide" data-goal="${goal.id}">
-        <div class="progress-ring" style="--progress:${progressOf(goal)}%">
+        <div class="progress-ring">
+          <svg class="ring-svg" viewBox="0 0 120 120" aria-hidden="true">
+            <circle class="ring-track" cx="60" cy="60" r="52"></circle>
+            <circle class="ring-fill" cx="60" cy="60" r="52"
+              stroke-dasharray="${RING_LENGTH}"
+              stroke-dashoffset="${RING_LENGTH * (1 - progressOf(goal) / 100)}"></circle>
+          </svg>
           <div class="ring-inner">
             <span>${escapeHtml(goal.name)}</span>
             <strong>${money(saved)}</strong>
