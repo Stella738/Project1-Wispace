@@ -45,7 +45,6 @@ exchange rates in here, so a 200 goal stays 200 whichever currency you pick.
     index.html    every screen
     styles.css    all the styling
     app.js        the logic - saving, maths, and rendering
-    images/       mockups and reference
 
 ## Note
 
