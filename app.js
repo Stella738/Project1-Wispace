@@ -172,6 +172,23 @@ function checkinsFor(goal) {
 
 const nextDueCard = (goal) => checkinsFor(goal).find((card) => !card.done);
 
+const depositsFor = (goalId) => state.entries.filter((entry) => entry.goalId === goalId && entry.type === 'deposit');
+
+// Takes back the newest deposit on this goal, so a mistaken check-in can be
+// tapped away. Repeat taps walk back through the deposits one at a time.
+function undoLastCheckin() {
+  const goal = activeGoal();
+  if (!goal) return;
+  const deposits = depositsFor(goal.id);
+  if (!deposits.length) return;
+
+  const newest = deposits.reduce((a, b) => (b.createdAt > a.createdAt ? b : a));
+  if (savedFor(goal.id) - newest.amount < 0) return;   // would go negative against a withdrawal
+
+  state.entries = state.entries.filter((entry) => entry.id !== newest.id);
+  render();
+}
+
 /* When the amount and the deadline don't line up, offer ways out instead of
    just refusing. Each one can be applied with a tap. */
 function planSuggestions(target, saved, deadline, cadence, contribution) {
@@ -370,14 +387,23 @@ function renderCheckins() {
   const cards = checkinsFor(goal);
   const currentIndex = cards.findIndex((card) => !card.done);
 
+  /* Only the newest completed card can be undone. Being done is worked out
+     from the running balance, so undoing an older one would quietly take
+     every deposit after it as well. */
+  const lastDone = (currentIndex === -1 ? cards.length : currentIndex) - 1;
+  const canUndo = lastDone >= 0 && depositsFor(goal.id).length > 0;
+
   track.innerHTML = cards.map((card) => {
     const isNow = card.index - 1 === currentIndex;
-    const classes = ['day-card', card.done ? 'done' : '', isNow ? 'today' : ''].filter(Boolean).join(' ');
+    const isUndo = canUndo && card.index - 1 === lastDone;
+    const classes = ['day-card', card.done ? 'done' : '', isNow ? 'today' : '', isUndo ? 'undoable' : '']
+      .filter(Boolean).join(' ');
     return `
-      <button class="${classes}" type="button" data-checkin="${card.index}" data-amount="${card.amount}">
+      <button class="${classes}" type="button" data-checkin="${card.index}" data-amount="${card.amount}"
+        title="${isUndo ? 'Undo this check-in' : ''}">
         <span>${cadence.unit} ${card.index}</span>
         <strong>${shortMoney(card.amount)}</strong>
-        <small>${shortDate(card.due)}</small>
+        <small>${isUndo ? '&#8630; Undo' : shortDate(card.due)}</small>
       </button>`;
   }).join('');
 
@@ -618,20 +644,31 @@ function enableDrag(track, onRelease) {
   let startX = 0;
   let startScroll = 0;
   let travelled = 0;
+  let dragging = false;
 
   track.addEventListener('pointerdown', (event) => {
     if (event.pointerType !== 'mouse') return;
     pointerId = event.pointerId;
-    travelled = 0;
     startX = event.clientX;
     startScroll = track.scrollLeft;
-    track.classList.add('dragging');
-    track.setPointerCapture(pointerId);
+    travelled = 0;
+    dragging = false;
   });
 
   track.addEventListener('pointermove', (event) => {
     if (pointerId === null) return;
     const moved = event.clientX - startX;
+
+    /* Claim the pointer only once this is really a drag. Capturing on
+       pointerdown retargets the click that follows to the track itself, which
+       stops taps from ever reaching the cards inside it. */
+    if (!dragging) {
+      if (Math.abs(moved) < 6) return;
+      dragging = true;
+      track.classList.add('dragging');
+      track.setPointerCapture(pointerId);
+    }
+
     travelled = Math.max(travelled, Math.abs(moved));
     track.scrollLeft = startScroll - moved;
   });
@@ -640,6 +677,8 @@ function enableDrag(track, onRelease) {
     if (pointerId === null) return;
     if (track.hasPointerCapture(pointerId)) track.releasePointerCapture(pointerId);
     pointerId = null;
+    if (!dragging) return;
+    dragging = false;
     track.classList.remove('dragging');
     if (onRelease) onRelease();
   };
@@ -1027,7 +1066,10 @@ const checkinTrack = $('#checkin-track');
 enableDrag(checkinTrack);
 checkinTrack.addEventListener('click', (event) => {
   const card = event.target.closest('[data-checkin]');
-  if (card) openDepositSheet(Number(card.dataset.amount));
+  if (!card) return;
+  if (card.classList.contains('undoable')) { undoLastCheckin(); return; }
+  if (card.classList.contains('done')) return;   // older check-ins are just history
+  openDepositSheet(Number(card.dataset.amount));
 });
 
 // Goals list

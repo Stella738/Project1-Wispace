@@ -134,6 +134,11 @@ h1,h2,h3,p{margin-top:0}
 .day-card.done{background:#e1f5e9;color:var(--green)}
 .day-card.done strong{color:var(--green)}
 .day-card.today{background:var(--blush);outline:2px solid var(--coral);outline-offset:2px;color:var(--coral-dark)}
+.day-card.undoable{outline:1.5px dashed var(--green);outline-offset:2px}
+.day-card.undoable small{font-weight:700;opacity:1}
+.day-card.undoable:hover{background:#d3efdf}
+.day-card.done:not(.undoable){cursor:default}
+.day-card.done:not(.undoable):hover{transform:none}
 .day-card.today strong{color:var(--coral-dark)}
 .swipe-hint{text-align:center;color:#aaa;font-size:11px;margin:10px 0 0}
 
