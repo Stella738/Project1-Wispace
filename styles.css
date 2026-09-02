@@ -219,7 +219,10 @@ h1,h2,h3,p{margin-top:0}
 .toggle:before{content:'';position:absolute;width:22px;height:22px;top:3px;left:3px;border-radius:50%;background:#fff;transition:.2s}
 .toggle:checked{background:var(--green)}
 .toggle:checked:before{transform:translateX(20px)}
-#profile-page>.secondary-button{margin-top:18px}
+.profile-actions{display:grid;gap:10px;margin-top:18px}
+.reset-button{width:100%;padding:14px;border:1px solid #f6c4c4;border-radius:15px;background:#fff1f0;color:var(--coral-dark);font-weight:700;transition:background .2s,color .2s,border-color .2s}
+.reset-button:hover{background:var(--coral-dark);border-color:var(--coral-dark);color:#fff}
+.reset-button.armed{background:var(--coral-dark);border-color:var(--coral-dark);color:#fff}
 
 /* ---------- bottom nav ---------- */
 

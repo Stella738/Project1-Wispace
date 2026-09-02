@@ -245,6 +245,7 @@ function showPage(id) {
   // has its own title, so the whole header steps out of the way.
   $('#app-header').hidden = id !== 'home-page';
   closeSwipedGoal();
+  if (resetArmed) disarmReset();
 
   // A hidden page has no width, so both sliders lose their place while the
   // user is off on another tab. Put them back once Home is on screen again.
@@ -1134,6 +1135,33 @@ $('#transactions').addEventListener('click', (event) => {
   const remove = event.target.closest('[data-remove]');
   if (!remove) return;
   state.entries = state.entries.filter((entry) => entry.id !== remove.dataset.remove);
+  render();
+});
+
+/* Wipes every goal and every history entry, but keeps the person signed in
+   with their name, email and currency. Irreversible, so it takes two taps. */
+let resetArmed = null;
+
+function disarmReset() {
+  clearTimeout(resetArmed);
+  resetArmed = null;
+  const button = $('#reset-goals');
+  button.classList.remove('armed');
+  button.textContent = 'Reset goals';
+}
+
+$('#reset-goals').addEventListener('click', () => {
+  if (!resetArmed) {
+    const button = $('#reset-goals');
+    button.classList.add('armed');
+    button.textContent = 'Tap again to erase everything';
+    resetArmed = setTimeout(disarmReset, 5000);
+    return;
+  }
+  disarmReset();
+  state.goals = [];
+  state.entries = [];
+  state.activeGoalId = null;
   render();
 });
 
