@@ -1,7 +1,7 @@
-# Wispace
+# EarnWise
 
 A flexible money saving app built to take the pressure out of budgeting.
-You set a goal, pick a rhythm that fits your life, and Wispace keeps the plan
+You set a goal, pick a rhythm that fits your life, and EarnWise keeps the plan
 honest as real life happens.
 
 ## Running it

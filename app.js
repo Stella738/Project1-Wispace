@@ -1,8 +1,9 @@
-/* Wispace
+/* EarnWise
    A small saving tracker. There is no server behind this - everything the
    user makes is kept in this browser under one localStorage key. */
 
-const STORE_KEY = 'wispace-data';
+const STORE_KEY = 'earnwise-data';
+const LEGACY_STORE_KEY = 'wispace-data';   // what the app was called before
 const DAY_MS = 86400000;
 
 const CURRENCIES = {
@@ -96,7 +97,15 @@ function save() {
 
 function load() {
   try {
-    const raw = localStorage.getItem(STORE_KEY);
+    let raw = localStorage.getItem(STORE_KEY);
+    if (!raw) {
+      // Carry anything saved under the old name over to the new one.
+      raw = localStorage.getItem(LEGACY_STORE_KEY);
+      if (raw) {
+        localStorage.setItem(STORE_KEY, raw);
+        localStorage.removeItem(LEGACY_STORE_KEY);
+      }
+    }
     if (raw) state = Object.assign(state, JSON.parse(raw));
   } catch (error) {
     console.warn('Saved data was unreadable, starting fresh', error);
@@ -604,7 +613,7 @@ function renderProfile() {
   const user = state.user;
   if (!user) return;
 
-  const initial = (user.name || user.first || 'W').trim().charAt(0).toUpperCase();
+  const initial = (user.name || user.first || 'E').trim().charAt(0).toUpperCase();
   $('#avatar').textContent = initial;
   $('#profile-name').textContent = user.name;
   $('#profile-handle').textContent = `@${(user.first || user.name).toLowerCase().replace(/\s+/g, '')}`;
@@ -973,9 +982,9 @@ function setAuthMode(mode) {
   $$('.when-create').forEach((field) => { field.hidden = !creating; });
   $('#auth-title').innerHTML = creating ? "Let's make your<br>money feel lighter." : 'Welcome back.';
   $('#auth-subtitle').textContent = creating
-    ? 'Tell us a little about you to personalise your space.'
+    ? 'Tell us a little about you to personalise your plan.'
     : 'Sign in with the details you used on this device.';
-  $('#auth-submit').innerHTML = creating ? 'Create my space <span>&rarr;</span>' : 'Sign in <span>&rarr;</span>';
+  $('#auth-submit').innerHTML = creating ? 'Create my account <span>&rarr;</span>' : 'Sign in <span>&rarr;</span>';
   $('#auth-error').hidden = true;
 }
 
@@ -993,7 +1002,7 @@ function handleAuth(event) {
 
   if (authMode === 'signin') {
     if (!state.user || state.user.email !== email || state.user.password !== scramble(password)) {
-      error.textContent = 'No space on this device matches those details.';
+      error.textContent = 'No account on this device matches those details.';
       error.hidden = false;
       return;
     }
